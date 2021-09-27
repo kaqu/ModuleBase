@@ -1,0 +1,3 @@
+# ModuleBase
+
+Modular applications base.
