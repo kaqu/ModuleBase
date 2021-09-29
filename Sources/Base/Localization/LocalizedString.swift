@@ -35,14 +35,22 @@ public struct LocalizedString {
   }
 
   public func string(
-    with aruments: Array<CVarArg> = .init()
+    with aruments: Array<CVarArg> = .init(),
+    localizaton: (_ key: Key, _ tableName: String?, _ bundle: Bundle) -> String
+    = { (key: Key, tableName: String?, bundle: Bundle) -> String in
+      #if os(macOS) || os(iOS) || os(tvOS) || os(watchOS)
+      NSLocalizedString(
+        key.rawValue,
+        tableName: tableName,
+        bundle: bundle,
+        comment: ""
+      )
+      #else
+      #error("Unsupported platform")
+      #endif
+    }
   ) -> String {
-    let string: String = NSLocalizedString(
-      self.key.rawValue,
-      tableName: self.tableName,
-      bundle: self.bundle,
-      comment: ""
-    )
+    let string: String = localizaton(self.key, self.tableName, self.bundle)
 
     var joinedArguments: Array<CVarArg> = self.arguments
     joinedArguments.append(contentsOf: arguments)

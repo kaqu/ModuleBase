@@ -1,10 +1,10 @@
 import libkern
 
-internal final class SpinLock {
+public final class SpinLock {
 
   private let ptr: AtomicFlag.Pointer
 
-  internal init() {
+  public init() {
     self.ptr = AtomicFlag.make()
     // ensure false initially
     AtomicFlag.clear(self.ptr)
@@ -14,22 +14,21 @@ internal final class SpinLock {
     AtomicFlag.destroy(self.ptr)
   }
 
-  internal func lock() {
+  public func lock() {
     while AtomicFlag.readAndSet(self.ptr) {}
   }
 
-  internal func unlock() {
-    AtomicFlag.clear(self.ptr)
+  @discardableResult
+  public func tryLock() -> Bool {
+    !AtomicFlag.readAndSet(self.ptr)
   }
 
-  internal func withLock<Result>(
-    _ execute: () -> Result
-  ) -> Result {
-    self.lock()
-    defer { self.unlock() }
-    return execute()
+  public func unlock() {
+    AtomicFlag.clear(self.ptr)
   }
 }
+
+extension SpinLock: Lock {}
 
 private enum AtomicFlag {
 

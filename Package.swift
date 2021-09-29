@@ -15,6 +15,9 @@ let package = Package(
           name: "Base",
           targets: ["Base"]),
         .library(
+          name: "CommonFeatures",
+          targets: ["CommonFeatures"]),
+        .library(
           name: "TestModule",
           targets: ["TestModule"]),
         .library(
@@ -38,9 +41,10 @@ let package = Package(
         .target(
             name: "ModuleBase",
             dependencies: ["Base"]),
+      .target(name: "CommonFeatures", dependencies: ["ModuleBase"]),
         .target(
           name: "TestModuleInterface",
-          dependencies: ["ModuleBase"]),
+          dependencies: ["ModuleBase", "CommonFeatures"]),
         .target(
           name: "TestModule",
           dependencies: ["TestModuleInterface"]),

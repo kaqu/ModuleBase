@@ -1,6 +1,6 @@
 import ModuleBase
 
-public struct TestDependantFeatureInterface: StatelessFeature {
+public struct TestDependantFeatureInterface: ContextlessFeature {
 
   public var doDependantStuff: () -> Void
 

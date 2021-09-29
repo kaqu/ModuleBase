@@ -1,29 +1,23 @@
 import ModuleBase
-@_exported import TestModuleInterface
+import TestModuleInterface
+import CommonFeatures
 
 extension FeatureLoader where Feature == TestFeatureInterface {
 
   public static var stuffy: Self {
     Self { features in
-      .init(doStuff: { print("stuffy") })
-    }
-  }
-}
-
-extension FeatureLoader where Feature == TestStatefulFeatureInterface {
-
-  public static var stateful: Self {
-    Self { features, state in
-      var state = state
+      let property: StoredProperty<String> = try features.storedProperty(for: "stuffy")
+      let isFirstLaunch: StoredProperty<Bool> = try features.storedProperty(for: "firstLaunch")
       return .init(
-        overrideState: { newState in
-          state = newState
+        doStuff: { print("stuffy") },
+        loadValue: {
+          property.load()
         },
-        doStuff: {
-            state.value += 1
-            print("stuff state: \(state)")
-          }
-        )
+        saveValue: { value in
+          property.save(value)
+        }
+      )
     }
   }
 }
+

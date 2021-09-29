@@ -2,57 +2,33 @@ import Base
 
 public protocol AnyFeature {
 
-  func unload(from features: Features) throws
+  static var typeIdentifier: FeatureTypeIdentifier
+  { get }
+  var instanceIdentifier: FeatureInstanceIdentifier
+  { get }
 }
 
-extension AnyFeature {
+public protocol ContextlessFeature: AnyFeature {}
 
-  public func unload(from _: Features) throws {
-    throw FeatureUnloadUnavailable.error
-  }
+extension ContextlessFeature {
+
+  public static var typeIdentifier: FeatureTypeIdentifier
+  { .identifier(for: Self.self) }
+  public var instanceIdentifier: FeatureInstanceIdentifier
+  { .identifier(for: self, context: .none) }
 }
 
-public protocol AnyContextlessFeature: AnyFeature {}
-
-public protocol AnyContextualFeature: AnyFeature {
+public protocol ContextualFeature: AnyFeature {
 
   associatedtype Context: Hashable
+
   var context: Context { get }
 }
 
-public protocol StatelessFeature: AnyContextlessFeature {}
+extension ContextualFeature {
 
-public protocol ContextualStatelessFeature: AnyContextualFeature {}
-
-public protocol StatefulFeature: AnyContextlessFeature {
-
-  associatedtype State: FeatureState
-
-  func override(state: State) throws
-}
-
-extension StatefulFeature {
-
-  public func override(state: State) throws {
-    throw FeatureStateOverrideUnavailable.error
-  }
-}
-
-public protocol ContextualStatefulFeature: AnyContextualFeature {
-
-  associatedtype State: FeatureState
-
-  func override(state: State) throws
-}
-
-extension ContextualStatefulFeature {
-
-  public func override(state: State) throws {
-    throw FeatureStateOverrideUnavailable.error
-  }
-}
-
-public protocol FeatureState {
-
-  static func initial() -> Self
+  public static var typeIdentifier: FeatureTypeIdentifier
+  { .identifier(for: Self.self) }
+  public var instanceIdentifier: FeatureInstanceIdentifier
+  { .identifier(for: self, context: self.context) }
 }

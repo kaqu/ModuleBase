@@ -1,4 +1,4 @@
-public struct Tagged<RawValue, Type>: RawRepresentable {
+public struct Tagged<RawValue, Tag>: RawRepresentable {
 
   public var rawValue: RawValue
 
